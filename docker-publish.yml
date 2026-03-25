@@ -8,18 +8,30 @@ on:
 permissions:
   contents: read
   packages: write
-  jobs:
+
+jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v6
-      - name: Log in to the Container registry
+      # Checkout your repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Log in to GitHub Container Registry (GHCR)
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker image
+
+      # Build your Docker image
+      - name: Build Docker image
         run: |
-          docker build . --tag ghcr.io/suikxpt/skills-publish-docker-images2/stackoverflown:main
-          docker push ghcr.io/suikxpt/skills-publish-docker-images2/stackoverflown:main
+          docker build -t ghcr.io/${{ github.repository }}/stackoverflown:latest .
+
+      # Push your Docker image
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/stackoverflown:latest
